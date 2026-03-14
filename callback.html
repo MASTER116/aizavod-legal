@@ -1,37 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIZAVOD - TikTok Authorization</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 100px auto; padding: 20px; color: #333; text-align: center; }
-        .status { font-size: 18px; margin: 20px 0; }
-        .code { background: #f0f0f0; padding: 10px 20px; border-radius: 8px; font-family: monospace; word-break: break-all; margin: 20px 0; }
-        .error { color: #e94560; }
-        .success { color: #28a745; }
-    </style>
+    <title>AI ЗАВОД -- Авторизация TikTok</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>AIZAVOD</h1>
+    <header class="site-header">
+        <a href="index.html" class="site-logo">AI ЗАВОД</a>
+    </header>
+
+    <h1>Авторизация TikTok</h1>
     <div id="result"></div>
+
     <script>
+        // TODO: заменить на production-домен при финализации инфраструктуры
+        var API_BASE = 'https://api.aizavod.ru';
+
         var params = new URLSearchParams(window.location.search);
         var code = params.get('code');
         var error = params.get('error');
+        var state = params.get('state') || '';
         var el = document.getElementById('result');
+
         if (code) {
-            el.innerHTML = '<p class="status success">Authorization successful!</p>' +
-                '<p>Your authorization code:</p>' +
-                '<div class="code">' + code + '</div>' +
-                '<p>Send this code to the bot or it will be processed automatically.</p>';
-            fetch('http://72.56.127.52/api/v1/tiktok/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(params.get('state') || ''))
+            el.innerHTML =
+                '<p class="callback-status status-success">Авторизация прошла успешно!</p>' +
+                '<p>Код авторизации:</p>' +
+                '<div class="callback-code">' + code + '</div>' +
+                '<p>Отправьте этот код боту или он будет обработан автоматически.</p>';
+
+            fetch(API_BASE + '/api/v1/tiktok/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state))
                 .catch(function() {});
         } else if (error) {
-            el.innerHTML = '<p class="status error">Authorization failed: ' + error + '</p>';
+            el.innerHTML =
+                '<p class="callback-status status-error">Ошибка авторизации: ' + error + '</p>' +
+                '<p><a href="index.html">Вернуться на главную</a></p>';
         } else {
-            el.innerHTML = '<p class="status">Waiting for authorization...</p>';
+            el.innerHTML =
+                '<p class="callback-status">Ожидание авторизации...</p>';
         }
     </script>
+
+    <footer class="site-footer">
+        <p>AI ЗАВОД &copy; 2026 | <a href="mailto:azatmaster@gmail.com">azatmaster@gmail.com</a></p>
+    </footer>
 </body>
 </html>
